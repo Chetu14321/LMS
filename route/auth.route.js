@@ -1,6 +1,7 @@
 const authRoute=require('express').Router();
 
-const {regController,loginController,logoutController,verifyController,updatePassController,forgotPassController} =require('../controller/auth.controller')
+const {regController,loginController,logoutController,verifyController,updatePassController,forgotPassController} =require('../controller/auth.controller');
+const authMiddleware = require('../middleware/auth');
 
 //register
 authRoute.post('/register',regController);
@@ -12,7 +13,7 @@ authRoute.post('/login',loginController);
 authRoute.get('/logout',logoutController);
 
 //verify email address
-authRoute.get('/verify',verifyController);
+authRoute.get('/verify',authMiddleware,verifyController);
 
 //update password
 authRoute.patch('/update/Password',updatePassController);

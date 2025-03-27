@@ -4,6 +4,7 @@ require('dotenv').config()
 const PORT=process.env.PORT
 const app=express()
 const connectdb=require("./db/db-connect")
+const cookieParser=require("cookie-parser")
 
 const cors = require('cors')
 
@@ -16,6 +17,8 @@ app.use(cors({
     credentials: true  // allow session cookies across domains
   })
 )
+
+app.use(cookieParser(process.env.SECRET_KEY))
 // Middleware to parse JSON request bodies
 
 app.use(express.urlencoded({ extended: true }))
