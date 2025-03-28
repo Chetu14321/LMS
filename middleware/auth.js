@@ -13,7 +13,7 @@ const authMiddleware = async (req,res,next) => {
         await jwt.verify(login_token, process.env.SECRET_KEY,(err,data) => {
             if(err)
                 return res.status(StatusCodes.UNAUTHORIZED).json({ msg: err.message })
-
+ 
             let { id } = data
             req.userId = id;
 

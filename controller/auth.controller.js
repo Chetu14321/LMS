@@ -80,7 +80,7 @@ const loginController=async(req,res)=>{
         //verify the emailid
         let exUser=await UserModel.findOne({email})
         if(!exUser)
-            return res.status(StatusCodes.NOT_FOUND).json({msg:`User ${name} not found`})
+            return res.status(StatusCodes.NOT_FOUND).json({msg:`User ${email} not found`})
 
         //verify password
 
@@ -138,14 +138,67 @@ const  verifyController = async (req,res) => {
 }
 const forgotPassController=async(req,res)=>{
     try{
-        res.json({msg:"forgot password"})
+        let {email}=req.body;
+        //verify the emailid
+        let exUser=await UserModel.findOne({email})
+        if(!exUser)
+            return res.status(StatusCodes.NOT_FOUND).json({msg:`User ${email} not found`})
+        //generate random password
+
+        //send an email to the user to update the password
+        let num =Math.floor(100000+Math.random()*999999)
+
+        let template=`<div>
+                       <h1>${exUser.name} , we proccesed the rewuest for  genatring the new password.....</h1>
+                       <h3>OTP: <strong><mark>${num}</mark></strong></h3> 
+                      </div>`
+        await UserModel.findOneAndUpdate({email},{otp:num})
+
+        //send email to user and store the otp
+        await mailHandler(exUser.email,"Reset Password",template)
+        .then(out=>{
+            res.status(StatusCodes.OK).json({msg:"Otp successfully....sent check your email inbox...."})
+        })
+        .catch(err=>{
+             return res.json(StatusCodes.INTERNAL_SERVER_ERROR).json({msg:err.message})
+        })
     }catch(err){
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({msg:err.message});
     }
 }
+
+
+//update password
 const updatePassController=async(req,res)=>{
     try{
-        res.json({msg:"update password sucessfully"})
+
+        let {email,password,otp}=req.body
+        //verify the emailid
+        let exUser=await UserModel.findOne({email})
+        if(!exUser)
+            return res.status(StatusCodes.NOT_FOUND).json({msg:`User ${email} not found`})
+        // res.json({msg:"update password sucessfully"})
+
+    //comapre otp
+
+    if(exUser.otp !==otp)
+        return res.status(StatusCodes.UNAUTHORIZED).json({msg:"Invalid otp....."})
+
+    //compare with existing password
+    let cmpPass=await bcrypt.compare(password,exUser.password)
+    if(cmpPass)
+        return res.status(StatusCodes.CONFLICT).json({msg:"Password can't be same as old password"})
+
+
+    //update the password
+
+    let encpass=await bcrypt.hash(password,10)
+    await UserModel.findOneAndUpdate({
+        password:encpass,
+        otp:0
+    })
+    res.status(StatusCodes.OK).json({msg:"Password updated successfully"})
+     
     }catch(err){
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({msg:err.message});
     }
