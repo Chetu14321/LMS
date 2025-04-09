@@ -19,8 +19,10 @@ app.use(cors({
 )
 
 app.use(cookieParser(process.env.SECRET_KEY))
-// Middleware to parse JSON request bodies
 
+
+
+// Middleware to parse JSON request bodies
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
