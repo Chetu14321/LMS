@@ -5,8 +5,8 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
  export default function Menu(){
-    const {isLogin,setIsLogin ,setToken}=useAuth()
-    const Navigate=useNavigate()
+    const {isLogin,setIsLogin ,setToken,setUser,user}=useAuth()
+    const navigate=useNavigate()
 
 
 
@@ -15,12 +15,18 @@ import { toast } from "react-toastify";
         if(window.confirm("Are you sure to Logour")){
             await axios.get(`/api/auth/logout`)
             .then(res=>{
+                // console.log(res); // Check if it's undefined or has an error
+                // console.log(res.data); 
                
                 toast.success(res.data.msg)
+               
                 setIsLogin(false)
                 setToken(false)
-                Navigate(`/`)
+                setUser(false)
+               
+                navigate(`/`)
             }).catch(err=>{toast.error(err.response.data.msg)})
+            
         }else{
             toast.warning("Logout failed")
         }
@@ -30,7 +36,7 @@ import { toast } from "react-toastify";
        <>
         <nav className="navbar navbar-expand-md navbar-dark bg-secondary">
          <div className="container">
-            <NavLink to={'/'}>Auth</NavLink> 
+            <NavLink className="navbar-brand" to={'/'}>Auth</NavLink> 
 
             <button className="btn btn-outline-dark" data-bs-toggle="offcanvas" data-bs-target="#menu" >
                 <span className="navbar-toggler-icon"></span>
@@ -63,7 +69,7 @@ import { toast } from "react-toastify";
                     isLogin ?(
                         <ul className="nav nav-pills flex-column text-center">
                         <li className="nav-item">
-                            <NavLink to={'/dashboard'} className={'nav-link'}>Dashboard</NavLink>
+                            <NavLink to={`/dashboard/${user?.role}`} className={'nav-link'}>Dashboard</NavLink>
                         </li>
                         <li className="nav-item">
                             <NavLink onClick={()=>LogoutHandler()} className={'nav-link btn-danger'}>Logout</NavLink>

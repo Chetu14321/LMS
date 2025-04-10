@@ -1,26 +1,17 @@
-
-
 import React, { useState } from "react";
 import { toast } from "react-toastify";
-import {  useNavigate } from "react-router-dom";
-import axios from "axios"
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import useAuth from "../../Hooks/useAuth";
-
-
-
-
-
-
 
 export default function Login() {
     const [user, setUser] = useState({
-        // name: '',
         email: '',
-        // mobile: '',
         password: ''
     });
-    const Navigate=useNavigate()
-    const {setIsLogin,setToken}=useAuth()
+
+    const navigate = useNavigate();
+    const { setIsLogin, setToken } = useAuth();
 
     const readInput = (e) => {
         const { name, value } = e.target;
@@ -29,22 +20,19 @@ export default function Login() {
 
     const submitHandler = async (e) => {
         e.preventDefault();
-        try{
-            // console.log("user",user)
+        try {
             await axios.post(`/api/auth/login`, user)
-            .then(res=>{
-                toast.success(res.data.msg)
-                setToken(res.data.token)
-                setIsLogin(true)
-                Navigate('/dashboard')
-            }).catch(err=>toast.error(err.response.data.msg))
-
-        }
-        catch(err){
-            toast.error(err.message)
+                .then(res => {
+                    toast.success(res.data.msg);
+                    setToken(res.data.token);
+                    setIsLogin(true);
+                    navigate(`/dashboard/${res.data.role}`);
+                })
+                .catch(err => toast.error(err.response.data.msg));
+        } catch (err) {
+            toast.error(err.message);
         }
     };
-    
 
     return (
         <div className="container">
@@ -56,7 +44,6 @@ export default function Login() {
                         </div>
                         <div className="card-body">
                             <form onSubmit={submitHandler}>
-                              
                                 <div className="form-group mt-2">
                                     <label htmlFor="email">Your Email</label>
                                     <input
@@ -70,7 +57,6 @@ export default function Login() {
                                         required
                                     />
                                 </div>
-                              
                                 <div className="form-group mt-2">
                                     <label htmlFor="password">Your Password</label>
                                     <input
@@ -85,17 +71,17 @@ export default function Login() {
                                     />
                                 </div>
                                 <div className="form-group mt-2">
-                                    <input
-                                        type="submit"
-                                        value="Login User"
-                                        className="btn btn-outline-success"
-                                    />
-                                    <input
-                                        type="reset"
-                                        value="Clear"
-                                        className="btn btn-outline-warning"
-                                       
-                                    />
+                                    <input type="submit" value="Login User" className="btn btn-outline-success" />
+                                    <input type="reset" value="Clear" className="btn btn-outline-warning ms-2" />
+                                </div>
+                                <div className="form-group mt-3 text-center">
+                                    <button 
+                                        type="button" 
+                                        className="btn btn-link text-primary"
+                                        onClick={() => navigate("/Forgotpassword")}
+                                    >
+                                        Forgot Password?
+                                    </button>
                                 </div>
                             </form>
                         </div>
@@ -105,4 +91,3 @@ export default function Login() {
         </div>
     );
 }
-

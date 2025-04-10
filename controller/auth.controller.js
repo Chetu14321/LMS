@@ -101,7 +101,7 @@ const loginController=async(req,res)=>{
         })
 
 
-        res.json({msg:"login successful", token})
+        res.json({msg:"login successful", token,role:exUser.role})
     }catch(err){
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({msg:err.message});
     }
@@ -167,42 +167,40 @@ const forgotPassController=async(req,res)=>{
     }
 }
 
-
 //update password
-const updatePassController=async(req,res)=>{
-    try{
+const updatePassController = async (req, res) => {
+    try {
+        let { email, password, otp } = req.body;
 
-        let {email,password,otp}=req.body
-        //verify the emailid
-        let exUser=await UserModel.findOne({email})
-        if(!exUser)
-            return res.status(StatusCodes.NOT_FOUND).json({msg:`User ${email} not found`})
-        // res.json({msg:"update password sucessfully"})
+        // verify the email id
+        let exUser = await UserModel.findOne({ email });
+        if (!exUser)
+            return res.status(StatusCodes.NOT_FOUND).json({ msg: `User ${email} not found` });
 
-    //comapre otp
+        // compare OTP
+        if (exUser.otp !== otp)
+            return res.status(StatusCodes.UNAUTHORIZED).json({ msg: "Invalid otp....." });
 
-    if(exUser.otp !==otp)
-        return res.status(StatusCodes.UNAUTHORIZED).json({msg:"Invalid otp....."})
+        // compare with existing password
+        let cmpPass = await bcrypt.compare(password, exUser.password);
+        if (cmpPass)
+            return res.status(StatusCodes.CONFLICT).json({ msg: "Password can't be same as old password" });
 
-    //compare with existing password
-    let cmpPass=await bcrypt.compare(password,exUser.password)
-    if(cmpPass)
-        return res.status(StatusCodes.CONFLICT).json({msg:"Password can't be same as old password"})
+        // update the password
+        let encpass = await bcrypt.hash(password, 10);
+        await UserModel.findOneAndUpdate(
+            { email },
+            {
+                password: encpass,
+                otp: 0
+            }
+        );
 
-
-    //update the password
-
-    let encpass=await bcrypt.hash(password,10)
-    await UserModel.findOneAndUpdate({
-        password:encpass,
-        otp:0
-    })
-    res.status(StatusCodes.OK).json({msg:"Password updated successfully"})
-     
-    }catch(err){
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({msg:err.message});
+        res.status(StatusCodes.OK).json({ msg: "Password updated successfully" });
+    } catch (err) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: err.message });
     }
-}
+};
 
 module.exports={regController,loginController,verifyController,forgotPassController,updatePassController,logoutController}
 

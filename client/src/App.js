@@ -9,9 +9,14 @@ import Dashboard from "./pages/Default/Dashboard";
 import NotFound from "./pages/Default/NotFound";
 import Menu from "./Component/Menu";
 import ProtectedRoute from "./AuthGuard/ProtectRoute";
+import AdminDashboard from "./Admin/AdminDashboard";
+import useAuth from "./Hooks/useAuth";
+import ForgotPassword from "./pages/Auth/ForgotPassword";
+
 
 
 function App() {
+  const {user}=useAuth()
   return (
   <BrowserRouter>
         <Menu/>
@@ -20,8 +25,9 @@ function App() {
           <Route exact path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Rigister />} />
+          <Route path="/ForgotPassword" element={<ForgotPassword />} />
           <Route  element={<ProtectedRoute/>}>
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path={"/dashboard/:role"} element={user?.role==="admin" ?<AdminDashboard/> :<Dashboard />} />
 
           </Route>
       

@@ -5,6 +5,7 @@ const PORT=process.env.PORT
 const app=express()
 const connectdb=require("./db/db-connect")
 const cookieParser=require("cookie-parser")
+const path=require('path')
 
 const cors = require('cors')
 
@@ -17,6 +18,7 @@ app.use(cors({
     credentials: true  // allow session cookies across domains
   })
 )
+app.use(express.static("./build"))
 
 app.use(cookieParser(process.env.SECRET_KEY))
 
@@ -30,7 +32,13 @@ app.use(express.json())
 
 //index route
 app.get("/",async(req,res)=>{
-    return res.status(StatusCodes.ACCEPTED).json({ message:"welcome to auth api"})
+    if(process.env.MODE==="development"){
+    return res.status(StatusCodes.ACCEPTED).json({ message:"welcome to auth api"})}
+    if(
+        process.env.MODE==="production"
+    ){
+        res.sendFile("index.html",{root:path.join(__dirname,"/build")})
+    }
 })
 
 //api route
