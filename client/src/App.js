@@ -12,6 +12,8 @@ import ProtectedRoute from "./AuthGuard/ProtectRoute";
 import AdminDashboard from "./Admin/AdminDashboard";
 import useAuth from "./Hooks/useAuth";
 import ForgotPassword from "./pages/Auth/ForgotPassword";
+import CourseDetails from "./pages/Default/CourseDetailes";
+
 
 
 
@@ -30,6 +32,8 @@ function App() {
             <Route path={"/dashboard/:role"} element={user?.role==="admin" ?<AdminDashboard/> :<Dashboard />} />
 
           </Route>
+          <Route path="/course/:id" element={<CourseDetails />} />
+          {/* <Route path="/Topic/:id" element={<Topic/>}/> */}
       
           <Route path="*" element={<NotFound />} />
         </Routes>

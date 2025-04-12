@@ -43,6 +43,8 @@ app.get("/",async(req,res)=>{
 
 //api route
 app.use(`/api/auth`,require('./route/auth.route'))
+app.use(`/api/course`,require('./route/course.route'))
+app.use(`/api/topic`,require('./route/topic.route'))
 
 //default routes
 app.all("/*",async(req,res)=>{

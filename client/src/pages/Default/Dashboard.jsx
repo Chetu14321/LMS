@@ -1,64 +1,67 @@
-import React from "react";
-import { FaUserShield, FaKey, FaClock } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+import axios from "axios"; // To make API calls
 
 export default function Dashboard() {
-    const user = {
-        name: "John Doe", // Replace with data from context or props
-        email: "johndoe@example.com",
-        otpVerified: true,
-        lastPasswordReset: "2025-04-08 10:32 AM"
+  const [user, setUser] = useState(null);  // State to store user info
+  const [totalCourses, setTotalCourses] = useState(0);  // State to store total courses count
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetching user info (using your /verify endpoint)
+        const userResponse = await axios.get("/api/auth/verify", {
+          withCredentials: true  // To send cookies with the request
+        });
+        setUser(userResponse.data.user);  // Set user info in state
+
+        // Fetching total courses (you need to create this endpoint to return the total number of courses)
+        const coursesResponse = await axios.get("/api/course/all");
+        setTotalCourses(coursesResponse.data.totalCourses); // Assuming response contains 'totalCourses'
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     };
 
-    return (
-        <div className="container py-4">
-            <div className="row mb-4">
-                <div className="col-md-12 text-center">
-                    <h2 className="text-primary">Welcome, {user.name}</h2>
-                    <p className="text-muted">{user.email}</p>
-                </div>
-            </div>
+    fetchData();
+  }, []);
 
-            {/* Info Cards */}
-            <div className="row g-4">
-                <div className="col-md-4">
-                    <div className="card shadow-sm border-0">
-                        <div className="card-body text-center">
-                            <FaUserShield size={30} className="text-info mb-2" />
-                            <h6>OTP Verification</h6>
-                            <p className={user.otpVerified ? "text-success" : "text-danger"}>
-                                {user.otpVerified ? "Verified" : "Not Verified"}
-                            </p>
-                        </div>
-                    </div>
-                </div>
+  // If user data is still loading
+  if (!user) {
+    return <p className="text-center mt-5">Loading your dashboard...</p>;
+  }
 
-                <div className="col-md-4">
-                    <div className="card shadow-sm border-0">
-                        <div className="card-body text-center">
-                            <FaKey size={30} className="text-warning mb-2" />
-                            <h6>Password Status</h6>
-                            <p>Password is active and secure.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="col-md-4">
-                    <div className="card shadow-sm border-0">
-                        <div className="card-body text-center">
-                            <FaClock size={30} className="text-danger mb-2" />
-                            <h6>Last Password Reset</h6>
-                            <p>{user.lastPasswordReset}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Actions */}
-            <div className="text-center mt-5">
-                <button className="btn btn-outline-primary px-4">
-                    Update Password
-                </button>
-            </div>
+  return (
+    <div className="container py-4">
+      {/* Welcome Message */}
+      <div className="row mb-4">
+        <div className="col-md-12 text-center">
+          <h2 className="text-primary">Welcome, {user.name}!</h2>
+          <p className="text-muted">Email: {user.email}</p>
         </div>
-    );
+      </div>
+
+      {/* User Info Section */}
+      <div className="row mb-4">
+        <div className="col-md-6">
+          <div className="card p-3 shadow rounded-4">
+            <h5>User Information</h5>
+            <p><strong>Name:</strong> {user.name}</p>
+            <p><strong>Email:</strong> {user.email}</p>
+            <p><strong>Mobile:</strong> {user.mobile}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Total Courses Section */}
+      <div className="row mb-4">
+        <div className="col-md-12 text-center">
+          <div className="card p-3 shadow rounded-4">
+            <h5>Total Available Courses</h5>
+            <p className="display-6">{totalCourses}</p>
+            <p>Explore and start learning from the available courses!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
