@@ -40,36 +40,36 @@ const readSingleCourse = async (req, res) => {
 
 
 //update course
+const updateCourse = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const exCourse = await CourseModel.findById(id);
+        if (!exCourse)
+            return res.status(StatusCodes.NOT_FOUND).json({ msg: "Requested course not found" });
 
-const updateCourse=async(req,res)=>{
-    try{
-        let id=req.params.id
-        let exCoures=await CourseModel.findById(id)
-        if(!exCoures)
-            return res.status(StatusCodes.NOT_FOUND).json({msg:"requested course not found"})
+        const updatedCourse = await CourseModel.findByIdAndUpdate(id, req.body, { new: true });
 
-        await CourseModel.findByIdAndUpdate({_id:id},req.body)
-
-
-    }catch(err){
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({msg:err.message})
+        res.status(StatusCodes.OK).json({ msg: "Course updated successfully", course: updatedCourse });
+    } catch (err) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: err.message });
     }
-}
+};
 
 //delete
+const deleteCourse = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const exCourse = await CourseModel.findById(id);
+        if (!exCourse)
+            return res.status(StatusCodes.NOT_FOUND).json({ msg: "Requested course not found" });
 
-const deleteCourse=async(req,res)=>{
-    try{
-        let id=req.params.id
-        let exCoures=await CourseModel.findById(id)
-        if(!exCoures)
-            return res.status(StatusCodes.NOT_FOUND).json({msg:"requested course not found"})
-        await CourseModel.findByIdAndDelete({_id:id},req.body)
+        await CourseModel.findByIdAndDelete(id);
 
-    }catch(err){
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({msg:err.message})
+        res.status(StatusCodes.OK).json({ msg: "Course deleted successfully" });
+    } catch (err) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: err.message });
     }
-}
+};
 
 
 module.exports={readAllCourse,readSingleCourse,createCourse,updateCourse,deleteCourse}

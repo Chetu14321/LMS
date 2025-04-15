@@ -1,6 +1,6 @@
 const authRoute=require('express').Router();
 
-const {regController,loginController,logoutController,verifyController,updatePassController,forgotPassController} =require('../controller/auth.controller');
+const {regController,loginController,logoutController,verifyController,updatePassController,forgotPassController, getAllUsersController} =require('../controller/auth.controller');
 const authMiddleware = require('../middleware/auth');
 
 //register
@@ -20,6 +20,10 @@ authRoute.patch('/update/Password',updatePassController);
 
 //forgot password request
 authRoute.post('/forgot/Password',forgotPassController);
+
+//all users
+// authRoute.get("/all", getAllUsersController);
+
 
 
 module.exports=authRoute;

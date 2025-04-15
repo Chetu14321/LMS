@@ -12,7 +12,7 @@ import { toast } from "react-toastify";
 
 
     const LogoutHandler= async()=>{
-        if(window.confirm("Are you sure to Logour")){
+        if(window.confirm("Are you sure to Logout.......")){
             await axios.get(`/api/auth/logout`)
             .then(res=>{
                 // console.log(res); // Check if it's undefined or has an error
@@ -36,7 +36,7 @@ import { toast } from "react-toastify";
        <>
         <nav className="navbar navbar-expand-md navbar-dark bg-secondary">
          <div className="container">
-            <NavLink className="navbar-brand" to={'/'}>Auth</NavLink> 
+            <NavLink className="navbar-brand" to={'/'}>Learning Management System</NavLink> 
 
             <button className="btn btn-outline-dark" data-bs-toggle="offcanvas" data-bs-target="#menu" >
                 <span className="navbar-toggler-icon"></span>

@@ -5,14 +5,15 @@ const authMiddleware=require("../middleware/auth")
 const adminAuth=require("../middleware/admin")
 
 
-courseRoute.post(`/add`,authMiddleware,adminAuth,createCourse)
+// courseRoute.post(`/add`,authMiddleware,adminAuth,createCourse)
+courseRoute.post(`/add`,createCourse)
 
 courseRoute.get("/all",readAllCourse)
 
 courseRoute.get('/single/:id',readSingleCourse)
 
-courseRoute.patch('/update/:id',authMiddleware,adminAuth,updateCourse)
+courseRoute.patch('/update/:id',updateCourse)
 
-courseRoute.delete('/delete/:id',authMiddleware,adminAuth,deleteCourse)
+courseRoute.delete('/delete/:id',deleteCourse)
 
 module.exports=courseRoute

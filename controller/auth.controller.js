@@ -202,6 +202,17 @@ const updatePassController = async (req, res) => {
     }
 };
 
+// const getAllUsersController = async (req, res) => {
+//     try {
+//         const users = await UserModel.find().select("-password -otp"); // excluding sensitive fields
+//         res.status(StatusCodes.OK).json({ users });
+//     } catch (err) {
+//         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: err.message });
+//     }
+// };
+
+
+
 module.exports={regController,loginController,verifyController,forgotPassController,updatePassController,logoutController}
 
 
