@@ -18,7 +18,7 @@ app.use(cors({
     credentials: true  // allow session cookies across domains
   })
 )
-app.use(express.static("./client"))
+app.use(express.static("/client/build"))
 
 app.use(cookieParser(process.env.SECRET_KEY))
 
