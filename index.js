@@ -18,7 +18,7 @@ app.use(cors({
     credentials: true  // allow session cookies across domains
   })
 )
-app.use(express.static("./build"))
+app.use(express.static("./client"))
 
 app.use(cookieParser(process.env.SECRET_KEY))
 
@@ -37,7 +37,7 @@ app.get("/",async(req,res)=>{
     if(
         process.env.MODE==="production"
     ){
-        res.sendFile("index.html",{root:path.join(__dirname,"/build")})
+        res.sendFile("index.html",{root:path.join(__dirname,"/client/build")})
     }
 })
 

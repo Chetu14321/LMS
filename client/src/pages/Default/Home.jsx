@@ -38,7 +38,7 @@ const Home = () => {
       <div className="container mt-5 position-relative" style={{ zIndex: 1 }}>
         <div className="text-center mb-5">
           <h1 className="display-5 fw-bold animate__animated animate__fadeInDown">
-            📚 Welcome to Our LMS
+            📚 Welcome to Our LMS......
           </h1>
           <p className="text-muted animate__animated animate__fadeIn">
             Start learning with our top courses today!
