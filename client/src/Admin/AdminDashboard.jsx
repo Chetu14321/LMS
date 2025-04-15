@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AdminDashboard = () => {
@@ -54,25 +55,35 @@ const AdminDashboard = () => {
     }
   };
 
-  // Create Course
   const handleCreateCourse = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token'); // Get the token from localStorage
-
+  
     try {
       await axios.post(`${API_BASE}/course/add`, newCourse, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      setNewCourse({ title: '', description: '', price: '', trainer: '', thunbmnail_image: '', course_link: '' });
+  
+      setNewCourse({
+        title: '',
+        description: '',
+        price: '',
+        trainer: '',
+        thunbmnail_image: '',
+        course_link: '',
+      });
+  
       setShowCreateForm(false);
+      toast.success('Course created successfully!');
       fetchCourses();
     } catch (error) {
       console.error(error.response?.data?.msg || error.message);
+      toast.error(error.response?.data?.msg || 'Failed to create course.');
     }
   };
+  
 
   // Update Course
   const handleUpdateCourse = async (e) => {

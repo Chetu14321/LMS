@@ -12,12 +12,9 @@ const cors = require('cors')
 
 
 
-app.use(cors({
-    origin: "*",
-    methods: "GET, POST, PUT,PATCH, DELETE",
-    credentials: true  // allow session cookies across domains
-  })
-)
+// import cors from 'cors';
+app.use(cors()); // ✅ this line must be before any routes
+
 app.use(express.static("./client/build"))
 
 app.use(cookieParser(process.env.SECRET_KEY))
