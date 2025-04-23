@@ -12,7 +12,7 @@ const Home = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5400/api/course/all")
+      .get("/api/course/all")
       .then((res) => {
         setCourses(res.data.courses);
       })
