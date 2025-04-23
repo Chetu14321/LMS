@@ -11,7 +11,7 @@ const CourseDetails = () => {
   useEffect(() => {
     const fetchCourseDetails = async () => {
       try {
-        const res = await axios.get(`http://localhost:5400/api/course/single/${id}`);
+        const res = await axios.get(`/api/course/single/${id}`);
         setCourse(res.data.course);
       } catch (err) {
         console.error(err.response?.data?.msg || err.message);
