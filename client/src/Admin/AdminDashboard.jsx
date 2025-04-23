@@ -30,7 +30,7 @@ const AdminDashboard = () => {
     course_link: '',
   });
 
-  const API_BASE = 'http://localhost:5400/api';
+  // const API_BASE = 'http://localhost:5400/api';
 
   useEffect(() => {
     fetchUsers();
@@ -39,7 +39,7 @@ const AdminDashboard = () => {
 
   const fetchUsers = async () => {
     try {
-      const res = await axios.get(`http://localhost:5400/api/auth/all`);
+      const res = await axios.get(`/api/auth/all`);
       setUsers(res.data.users);
     } catch (error) {
       console.error(error.response?.data?.msg || error.message);
@@ -48,7 +48,7 @@ const AdminDashboard = () => {
 
   const fetchCourses = async () => {
     try {
-      const res = await axios.get(`${API_BASE}/course/all`);
+      const res = await axios.get(`/api/course/all`);
       setCourses(res.data.courses);
     } catch (err) {
       console.error(err.response.data.msg || err.message);
@@ -60,7 +60,7 @@ const AdminDashboard = () => {
     const token = localStorage.getItem('token'); // Get the token from localStorage
   
     try {
-      await axios.post(`${API_BASE}/course/add`, newCourse, {
+      await axios.post(`/api/course/add`, newCourse, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -91,7 +91,7 @@ const AdminDashboard = () => {
     const token = localStorage.getItem('token'); // Get the token from localStorage
 
     try {
-      await axios.patch(`${API_BASE}/course/update/${selectedCourse._id}`, updateCourse, {
+      await axios.patch(`/api/course/update/${selectedCourse._id}`, updateCourse, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -113,7 +113,7 @@ const AdminDashboard = () => {
   
       const token = localStorage.getItem("token");
   
-      await axios.delete(`${API_BASE}/course/delete/${id}`, {
+      await axios.delete(`/api/course/delete/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
