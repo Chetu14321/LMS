@@ -13,6 +13,7 @@ import AdminDashboard from "./Admin/AdminDashboard";
 import useAuth from "./Hooks/useAuth";
 import ForgotPassword from "./pages/Auth/ForgotPassword";
 import CourseDetails from "./pages/Default/CourseDetailes";
+import Topic from "./pages/Default/Topic";
 
 
 
@@ -34,6 +35,9 @@ function App() {
           </Route>
           <Route path="/course/:id" element={<CourseDetails />} />
           {/* <Route path="/Topic/:id" element={<Topic/>}/> */}
+
+          <Route path="/topic/:topicId" element={<Topic/>} />
+
       
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -1,25 +1,43 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "animate.css"; // Import the animate.css file
 
 const CourseDetails = () => {
-  const { id } = useParams();
+  const { id } = useParams();  // Get course ID from URL params
   const [course, setCourse] = useState(null);
+  const navigate = useNavigate();  // Initialize useNavigate
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:5400/api/course/single/${id}`)
-      .then((res) => {
+    const fetchCourseDetails = async () => {
+      try {
+        const res = await axios.get(`http://localhost:5400/api/course/single/${id}`);
         setCourse(res.data.course);
-        console.log(res.data.course);
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error(err.response?.data?.msg || err.message);
-      });
+      }
+    };
+
+    fetchCourseDetails();
   }, [id]);
 
   if (!course) return <p className="text-center mt-5">Loading course...</p>;
+
+
+
+
+  // Handle button click to navigate to the topic page
+  const handleViewDetails = (topicId) => {
+    if (topicId) {
+      console.log("Navigating to topic:", topicId); // Debugging line
+      navigate(`/topic/${topicId}`);  // Navigate to the topic page
+    } else {
+      console.log("No topicId found");
+    }
+  };
+
+
+
 
   return (
     <div className="container mt-5">
@@ -74,19 +92,19 @@ const CourseDetails = () => {
               {new Date(course.createdAt).toLocaleDateString()}
             </p>
 
-            {course.course_link && (
+            {/* Ensure topics exist and then allow navigation */}
+        
               <p>
-                <strong>Course Link:</strong>{" "}
-                <a
-                  href={course.course_link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-sm btn-outline-primary"
+                <strong>Course Topics:</strong>
+                <button
+                  className="btn btn-outline-primary btn-sm"
+                  onClick={() => handleViewDetails(course._id)} // Pass the topic ID
                 >
-                  View Course
-                </a>
+                  View First Topic
+                </button>
               </p>
-            )}
+            
+           
           </div>
         </div>
       </div>

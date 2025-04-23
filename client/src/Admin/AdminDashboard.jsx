@@ -50,8 +50,8 @@ const AdminDashboard = () => {
     try {
       const res = await axios.get(`${API_BASE}/course/all`);
       setCourses(res.data.courses);
-    } catch (error) {
-      console.error(error.response?.data?.msg || error.message);
+    } catch (err) {
+      console.error(err.response.data.msg || err.message);
     }
   };
 
