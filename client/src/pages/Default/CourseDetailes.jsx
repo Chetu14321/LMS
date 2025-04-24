@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import "animate.css"; // Import the animate.css file
+import "animate.css";
 
 const CourseDetails = () => {
-  const { id } = useParams();  // Get course ID from URL params
+  const { id } = useParams();
   const [course, setCourse] = useState(null);
-  const navigate = useNavigate();  // Initialize useNavigate
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCourseDetails = async () => {
@@ -21,90 +21,79 @@ const CourseDetails = () => {
     fetchCourseDetails();
   }, [id]);
 
-  if (!course) return <p className="text-center mt-5">Loading course...</p>;
-
-
-
-
-  // Handle button click to navigate to the topic page
-  const handleViewDetails = (topicId) => {
-    if (topicId) {
-      console.log("Navigating to topic:", topicId); // Debugging line
-      navigate(`/topic/${topicId}`);  // Navigate to the topic page
-    } else {
-      console.log("No topicId found");
+  const handleViewDetails = (courseId) => {
+    if (courseId) {
+      navigate(`/course//topics/${courseId}`);
+      
     }
   };
 
-
-
+  if (!course) return <p className="text-center mt-5">Loading course...</p>;
 
   return (
     <div className="container mt-5">
+      {/* Header */}
       <div
-        className="text-center py-4 mb-4 text-white rounded animate__animated animate__fadeIn animate__delay-1s"
-        style={{ background: "linear-gradient(to right, #007bff, #6610f2)" }}
+        className="text-center py-4 mb-5 rounded text-white animate__animated animate__fadeInDown"
+        style={{
+          background: "linear-gradient(135deg, #6a11cb 0%, #2575fc 100%)",
+        }}
       >
-        <h2 className="mb-0">
-          Thank you for choosing <strong>{course.title}</strong>
+        <h2 className="fw-bold">
+          Welcome to <span className="text-warning">{course.title}</span>
         </h2>
+        <p className="mb-0 fs-5">Let’s begin your learning journey!</p>
       </div>
 
-      <div className="card shadow-lg rounded-4 p-4 border-0">
-        <div className="row g-4 align-items-start">
-          {/* Image + Button Column */}
-          <div className="col-md-5 d-flex flex-column align-items-stretch animate__animated animate__fadeInLeft animate__delay-1s">
-            <div className="position-relative">
-              <img
-                src={course.thunbmnail_image}
-                className="img-fluid rounded-4"
-                alt={course.title}
-                style={{ maxHeight: "320px", objectFit: "cover", width: "100%" }}
-              />
-              <div className="align-items-center mt-3">
-                <button className="btn btn-primary animate__animated animate__bounceIn">
-                  <i className="bi bi-book"></i> Start Learning
-                </button>
-              </div>
+      {/* Main Content Card */}
+      <div className="card shadow-lg border-0 rounded-4 animate__animated animate__zoomIn">
+        <div className="row g-4 p-4 align-items-start">
+          {/* Image Section */}
+          <div className="col-md-5">
+            <img
+              src={course.thunbmnail_image}
+              alt={course.title}
+              className="img-fluid rounded-4"
+              style={{ objectFit: "cover", maxHeight: "300px", width: "100%" }}
+            />
+            <div className="mt-3 text-center">
+              <button className="btn btn-outline-success w-100">
+                <i className="bi bi-play-circle me-2"></i> Start Course
+              </button>
             </div>
           </div>
 
-          {/* Details Column */}
-          <div className="col-md-7 animate__animated animate__fadeInRight animate__delay-2s">
-            <h3 className="text-dark">{course.title}</h3>
-            <p className="text-muted">
+          {/* Details Section */}
+          <div className="col-md-7">
+            <h3 className="text-dark fw-bold mb-3">{course.title}</h3>
+            <p className="text-secondary">
               <strong>Description:</strong> {course.description}
             </p>
 
             <div className="mb-3">
-              <span className="badge bg-success fs-6 p-2">
+              <span className="badge bg-gradient bg-success fs-6 p-2">
                 ₹{course.price} Only
               </span>
             </div>
 
             <p>
-              <strong>
-                <i className="bi bi-person-fill text-primary me-2"></i>Trainer:
-              </strong> {course.trainer}
+              <i className="bi bi-person-fill text-primary me-2"></i>
+              <strong>Trainer:</strong> {course.trainer}
             </p>
             <p>
+              <i className="bi bi-calendar-event text-info me-2"></i>
               <strong>Created At:</strong>{" "}
               {new Date(course.createdAt).toLocaleDateString()}
             </p>
 
-            {/* Ensure topics exist and then allow navigation */}
-        
-              <p>
-                <strong>Course Topics:</strong>
-                <button
-                  className="btn btn-outline-primary btn-sm"
-                  onClick={() => handleViewDetails(course._id)} // Pass the topic ID
-                >
-                  View First Topic
-                </button>
-              </p>
-            
-           
+            <div className="mt-4">
+              <button
+                className="btn btn-primary px-4"
+                onClick={() => handleViewDetails(course._id)}
+              >
+                <i className="bi bi-book-half me-2"></i> View Course Topics
+              </button>
+            </div>
           </div>
         </div>
       </div>

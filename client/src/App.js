@@ -36,7 +36,10 @@ function App() {
           <Route path="/course/:id" element={<CourseDetails />} />
           {/* <Route path="/Topic/:id" element={<Topic/>}/> */}
 
-          <Route path="/topic/:topicId" element={<Topic/>} />
+          {/* <Route path="/topic/:topicId" element={<Topic/>} /> */}
+
+          <Route path="/course//topics/:courseId" element={<Topic/>} />
+
 
       
           <Route path="*" element={<NotFound />} />

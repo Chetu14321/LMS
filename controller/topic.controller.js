@@ -75,6 +75,17 @@ const deleteTopic=async(req,res)=>{
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({msg:err.message})
     }
 }
+const getTopicsByCourse = async (req, res) => {
+    try {
+      const { courseId } = req.params;
+      const topics = await TopicModel.find({ courseId: courseId }); // <-- filter by courseId
+      res.status(200).json({ topics });
+    } catch (err) {
+      res.status(500).json({ msg: err.message });
+    }
+  };
+  
+  
 
 
-module.exports={readAllTopic,readSingleTopic,createTopic,updateTopic,deleteTopic}
+module.exports={readAllTopic,readSingleTopic,createTopic,updateTopic,deleteTopic,getTopicsByCourse}

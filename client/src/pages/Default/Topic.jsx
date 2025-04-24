@@ -1,64 +1,129 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import 'animate.css';  // Importing animate.css for animations
 
-const RelatedCourseTopics = () => {
-  const { courseId } = useParams();  // Get the courseId from the URL
+const Topic = () => {
+  const { courseId } = useParams();
   const [topics, setTopics] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeTopic, setActiveTopic] = useState(null);
 
   useEffect(() => {
-    axios.get(`/api/topic/course/${courseId}`) // Call the backend route
+    if (!courseId) return;
+
+    axios.get(`/api/topic/course/${courseId}`)
       .then((res) => {
-        console.log('Fetched course topics:', res.data);
         setTopics(res.data.topics);
-        setError(null); // Clear any previous error
+        setLoading(false);
       })
       .catch((err) => {
-        const errorMessage = err.response?.data?.msg || 'Failed to load course topics';
-        setError(errorMessage);
+        const msg = err.response?.data?.msg || "Failed to load topics.";
+        setError(msg);
+        setLoading(false);
       });
   }, [courseId]);
 
-  if (error) return <div className="text-danger text-center mt-4">{error}</div>;
-  if (!topics.length) return <div className="text-center mt-4">No topics available for this course.</div>;
+  const handleTopicClick = (topic) => {
+    setActiveTopic(topic); // Set the active topic when clicked
+  };
+
+  if (loading) return <div className="text-center text-white">Loading topics...</div>;
 
   return (
-    <div className="container mt-5">
-      <h3 className="mb-4">Related Topics for Course</h3>
-      {topics.map((topic) => (
-        <div className="card shadow-sm mb-4 p-3" key={topic._id}>
-          <h5>{topic.topic_title}</h5>
-          <p className="text-muted">{topic.topic_description}</p>
+    <div className="container mt-5 animate__animated animate__fadeIn">
+      <h2 className="text-center text-white mb-4">Course Topics</h2>
+      {error && <p className="text-danger text-center">{error}</p>}
 
-          {/* Display content based on category */}
-          {topic.catagory === 'video' && (
-            <video controls width="100%">
-              <source src={topic.content} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-          )}
-          {topic.catagory === 'audio' && (
-            <audio controls>
-              <source src={topic.content} type="audio/mpeg" />
-              Your browser does not support the audio tag.
-            </audio>
-          )}
-          {topic.catagory === 'document' && (
-            <iframe
-              src={topic.content}
-              title="Document"
-              width="100%"
-              height="500px"
-            ></iframe>
-          )}
-          {topic.catagory === 'article' && (
-            <div dangerouslySetInnerHTML={{ __html: topic.content }} />
+      <div className="row">
+        {/* Sidebar - List of Topics */}
+        <div className="col-md-4">
+          <div className="card shadow-lg bg-dark text-white mb-4">
+            <div className="card-header text-center">
+              <h5>Topics List</h5>
+            </div>
+            <ul className="list-group list-group-flush">
+              {topics.map((topic) => (
+                <li
+                  key={topic._id}
+                  className={`list-group-item bg-dark text-white d-flex justify-content-between align-items-center ${activeTopic?._id === topic._id ? 'active' : ''}`}
+                  onClick={() => handleTopicClick(topic)}
+                  style={{
+                    cursor: 'pointer',
+                    transition: 'background-color 0.3s ease, transform 0.2s ease',
+                  }}
+                >
+                  <span>{topic.topic_title}</span>
+                  <i
+                    className="bi bi-arrow-right-circle"
+                    style={{
+                      fontSize: '1.5rem',
+                      color: '#6610f2',
+                      transition: 'transform 0.3s ease',
+                    }}
+                  ></i>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* Main Content - Active Topic */}
+        <div className="col-md-8">
+          {activeTopic ? (
+            <div className="card shadow-lg bg-dark text-white p-4">
+              <h4 className="topic-title mb-3">{activeTopic.topic_title}</h4>
+              <p className="text-muted mb-4">{activeTopic.topic_description || 'No description available'}</p>
+
+              {/* Display content based on category */}
+              {activeTopic.catagory === 'video' && activeTopic.content && (
+                <div className="video-container mb-4">
+                  <video controls width="100%">
+                    <source src={activeTopic.content} />
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
+              )}
+
+              {activeTopic.catagory === 'audio' && activeTopic.content && (
+                <div className="audio-container mb-4">
+                  <audio controls>
+                    <source src={activeTopic.content} type="audio/mpeg" />
+                    Your browser does not support the audio element.
+                  </audio>
+                </div>
+              )}
+
+              {activeTopic.catagory === 'document' && activeTopic.content && (
+                <div className="document-container mb-4">
+                  <iframe
+                    src={activeTopic.content}
+                    title="Document"
+                    width="100%"
+                    height="500px"
+                    frameBorder="0"
+                  />
+                </div>
+              )}
+
+              {/* Article Rendering with Bootstrap styling */}
+              {activeTopic.catagory === 'article' && activeTopic.content && (
+                <div className="article-content mb-4">
+                  <div
+                    className="container"
+                    dangerouslySetInnerHTML={{ __html: activeTopic.content }}
+                  />
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="text-center text-white mt-4">Click on a topic to view its content</div>
           )}
         </div>
-      ))}
+      </div>
     </div>
   );
 };
 
-export default RelatedCourseTopics;
+export default Topic;
