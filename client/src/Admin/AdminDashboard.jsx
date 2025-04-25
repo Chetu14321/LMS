@@ -7,6 +7,7 @@ const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [courses, setCourses] = useState([]);
   const [topics, setTopics] = useState([]);
+  const [editingCourseId, setEditingCourseId] = useState(null);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -47,32 +48,72 @@ const AdminDashboard = () => {
   const handleCourseSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
+    const courseData = {
+      title: formData.title,
+      description: formData.description,
+      price: formData.price,
+      trainer: formData.trainer,
+      thunbmnail_image: formData.thunbmnail_image,
+      course_link: formData.course_link
+    };
+
     try {
-      await axios.post('/api/course/add', {
-        title: formData.title,
-        description: formData.description,
-        price: formData.price,
-        trainer: formData.trainer,
-        thunbmnail_image: formData.thunbmnail_image,
-        course_link: formData.course_link
-      }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      toast.success('Course created successfully!');
+      if (editingCourseId) {
+        await axios.patch(`/api/course/update/${editingCourseId}`, courseData, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        toast.success('Course updated successfully!');
+      } else {
+        await axios.post('/api/course/add', courseData, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        toast.success('Course created successfully!');
+      }
       setFormData({ ...formData, title: '', description: '', price: '', trainer: '', thunbmnail_image: '', course_link: '' });
+      setEditingCourseId(null);
       fetchCourses();
     } catch (error) {
-      toast.error(error.response?.data?.msg || 'Course creation failed');
+      toast.error(error.response?.data?.msg );
     }
   };
+
+  const handleEditCourse = (course) => {
+    setFormData({
+      ...formData,
+      title: course.title,
+      description: course.description,
+      price: course.price,
+      trainer: course.trainer,
+      thunbmnail_image: course.thunbmnail_image,
+      course_link: course.course_link
+    });
+    setEditingCourseId(course._id);
+    window.scrollTo(0, 0);
+  };
+
+  const handleDeleteCourse = async (id) => {
+    const token = localStorage.getItem('token');
+    if (window.confirm('Are you sure you want to delete this course?')) {
+      try {
+        await axios.delete(`/api/course/delete/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        toast.success('Course deleted successfully!');
+        fetchCourses();
+      } catch (error) {
+        toast.error('Failed to delete course');
+      }
+    }
+  };
+
   const handleTopicSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
     try {
       await axios.post('/api/topic/add', {
-        topic_title: formData.topicTitle, // Correct field name
-        topic_description: formData.topicDescription, // Correct field name
-        catagory: formData.category, // Use 'catagory' instead of 'category'
+        topic_title: formData.topicTitle,
+        topic_description: formData.topicDescription,
+        catagory: formData.category,
         content: formData.content,
         courseId: formData.courseId,
         courseName: courses.find(course => course._id === formData.courseId)?.title || ''
@@ -83,10 +124,9 @@ const AdminDashboard = () => {
       setFormData({ ...formData, topicTitle: '', topicDescription: '', category: '', content: '', courseId: '' });
       fetchTopics();
     } catch (error) {
-      toast.error(error.response?.data?.msg || 'Topic creation failed');
+      toast.error(error.response?.data?.msg );
     }
   };
-  
 
   return (
     <div className="d-flex">
@@ -126,7 +166,7 @@ const AdminDashboard = () => {
 
         {activeTab === 'course' && (
           <div className="card p-4 shadow-sm">
-            <h4 className="mb-4">Create New Course</h4>
+            <h4 className="mb-4">{editingCourseId ? 'Edit Course' : 'Create New Course'}</h4>
             <form onSubmit={handleCourseSubmit}>
               <div className="mb-3">
                 <label className="form-label">Title</label>
@@ -152,8 +192,34 @@ const AdminDashboard = () => {
                 <label className="form-label">Course Link</label>
                 <input type="url" className="form-control" value={formData.course_link} onChange={(e) => setFormData({ ...formData, course_link: e.target.value })} />
               </div>
-              <button className="btn btn-primary">Create Course</button>
+              <button className="btn btn-primary">{editingCourseId ? 'Update Course' : 'Create Course'}</button>
             </form>
+
+            {/* List of Courses */}
+            <h5 className="mt-5">Existing Courses</h5>
+            <table className="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Trainer</th>
+                  <th>Price</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {courses.map(course => (
+                  <tr key={course._id}>
+                    <td>{course.title}</td>
+                    <td>{course.trainer}</td>
+                    <td>{course.price}</td>
+                    <td>
+                      <button className="btn btn-sm btn-warning me-2" onClick={() => handleEditCourse(course)}>Edit</button>
+                      <button className="btn btn-sm btn-danger" onClick={() => handleDeleteCourse(course._id)}>Delete</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
 
