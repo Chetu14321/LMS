@@ -34,7 +34,7 @@ app.get("/",async(req,res)=>{
     if(
         process.env.MODE==="production"
     ){
-        return res.sendFile(path.join(__dirname, 'build', 'index.html'))    }
+        res.sendFile("index.html",{root:path.join(__dirname,"/build")})    }
 })
 
 //api route
