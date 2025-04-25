@@ -34,7 +34,7 @@ const Topic = () => {
   return (
     <div className="container-fluid bg-dark animate__animated animate__fadeIn" style={{ display: 'flex' }}>
       {/* Sidebar - List of Topics */}
-      <div className="sidebar bg-black text-white p-3 shadow-lg" style={{ width: '250px', height: '100vh', position: 'fixed', top: 0, left: 0, zIndex: 1000 }}>
+      <div className="sidebar bg-black text-white p-3 shadow-lg" style={{ width: '250px', height: '100vh', position: 'fixed', top: '60px', left: 0, zIndex: 1000 }}>
         <h5 className="text-center mb-5">Topics List</h5> {/* Increased margin-bottom here */}
         <ul className="list-group list-group-flush">
           {topics.map((topic) => (
@@ -76,15 +76,16 @@ const Topic = () => {
                 <h4 className="topic-title mb-3">{activeTopic.topic_title}</h4>
                 <p className="text-muted mb-4">{activeTopic.topic_description || 'No description available'}</p>
 
-                {/* Display content based on category */}
                 {activeTopic.catagory === 'video' && activeTopic.content && (
-                  <div className="video-container mb-4">
-                    <video controls width="100%">
-                      <source src={activeTopic.content} />
-                      Your browser does not support the video tag.
-                    </video>
-                  </div>
-                )}
+                        <div className="video-container mb-4">
+                                              <video controls width="100%">
+                        <source src={activeTopic.content} type="video/mp4" />
+                        Your browser does not support the video tag.
+                      </video>
+
+                        </div>
+                      )}
+
 
                 {activeTopic.catagory === 'audio' && activeTopic.content && (
                   <div className="audio-container mb-4">

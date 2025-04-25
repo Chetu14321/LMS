@@ -25,38 +25,34 @@ const regController=async(req,res)=>{
             password: hashedPassword,
             mobile
         })
-
-        let temp=`<div>
-        
-        
-                <h1>Hi ${name} ,Thank You for registering in our portal</h1>
-        
-                <table>
-                <tr>    
-                    <td>Name</td>
-                    <td>Email</td>
-                    <td>Mobile</td>
-                
-                
-                </tr>
-
-                <tr>
-                    <td>${name}</td>
-                    <td>${email}</td>
-                    <td>${mobile}</td>
-                
-                </tr>
-                <hr>
-
-
-
-                <h5>Reagards,</h5>
-                <p> Team Chethan</p>
-                </table>
-        
-        
-        
-        </div>`
+        let temp = `
+        <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+          <h1 style="color: #4CAF50;">Hi ${name},</h1>
+          <p>Thank you for registering in our portal.</p>
+      
+          <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+            <thead>
+              <tr style="background-color: #f2f2f2;">
+                <th style="padding: 10px; border: 1px solid #ddd;">Name</th>
+                <th style="padding: 10px; border: 1px solid #ddd;">Email</th>
+                <th style="padding: 10px; border: 1px solid #ddd;">Mobile</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;">${name}</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">${email}</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">${mobile}</td>
+              </tr>
+            </tbody>
+          </table>
+      
+          <hr style="margin: 40px 0; border: none; border-top: 1px solid #ccc;"/>
+      
+          <p style="font-size: 16px; margin-top: 30px;">Regards,<br/><strong>Team Chethan</strong></p>
+        </div>
+      `;
+      
 
         await mailHandler(email,"user Registration",temp)//email configuration while sending the welcome message
         .then(out=>{
