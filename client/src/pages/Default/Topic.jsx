@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import 'animate.css';
 
 const Topic = () => {
-  const { courseId } = useParams();
+  const { courseId, topicId } = useParams(); // Assuming topicId is passed in URL
   const [topics, setTopics] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTopic, setActiveTopic] = useState(null);
+  const [isSidebarVisible, setIsSidebarVisible] = useState(true);
+  const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
     if (!courseId) return;
@@ -25,8 +27,22 @@ const Topic = () => {
       });
   }, [courseId]);
 
+  useEffect(() => {
+    const foundTopic = topics.find(topic => topic._id === topicId);
+    setActiveTopic(foundTopic);
+  }, [topicId, topics]);
+
   const handleTopicClick = (topic) => {
     setActiveTopic(topic);
+
+    if (window.innerWidth <= 768) {
+      setIsSidebarVisible(false);
+    }
+  };
+
+  const handleBackClick = () => {
+    // Navigate back to the list of topics
+    navigate(`/course/${courseId}`);
   };
 
   if (loading) return <div className="text-center text-white">Loading topics...</div>;
@@ -35,7 +51,7 @@ const Topic = () => {
     <div className="container-fluid bg-dark animate__animated animate__fadeIn" style={{ display: 'flex' }}>
       {/* Sidebar */}
       <div
-        className="sidebar bg-black text-white p-3 shadow-lg"
+        className={`sidebar bg-black text-white p-3 shadow-lg ${isSidebarVisible ? '' : 'd-none'}`}
         style={{
           width: '250px',
           height: '100vh',
@@ -43,7 +59,8 @@ const Topic = () => {
           top: '60px',
           left: 0,
           zIndex: 1000,
-          overflowY: 'auto'
+          overflowY: 'auto',
+          transition: 'transform 0.3s ease',
         }}
       >
         <h5 className="text-center mb-5">Topics List</h5>
@@ -78,8 +95,8 @@ const Topic = () => {
       <div
         className="content"
         style={{
-          marginLeft: '250px',
-          width: 'calc(100% - 250px)',
+          marginLeft: isSidebarVisible ? '250px' : '0',  // Adjust based on sidebar visibility
+          width: isSidebarVisible ? 'calc(100% - 250px)' : '100%',
           padding: '20px',
           maxHeight: '100vh',
           overflowY: 'auto',
@@ -87,6 +104,15 @@ const Topic = () => {
           zIndex: 0
         }}
       >
+        {/* Back Button */}
+        <button 
+          onClick={handleBackClick} 
+          className="btn btn-light mb-4" 
+          style={{ position: 'absolute', top: '20px', left: '20px', zIndex: 999 }}
+        >
+          <i className="bi bi-arrow-left-circle" style={{ fontSize: '1.5rem', color: '#6610f2' }}></i> Back
+        </button>
+
         <h2 className="text-center text-white mb-4">Course Topics</h2>
         {error && <p className="text-danger text-center">{error}</p>}
 
