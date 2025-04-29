@@ -56,11 +56,7 @@ const CourseDetails = () => {
               className="img-fluid rounded-4"
               style={{ objectFit: "cover", maxHeight: "300px", width: "100%" }}
             />
-            <div className="mt-3 text-center">
-              <button className="btn btn-outline-success w-100">
-                <i className="bi bi-play-circle me-2"></i> Start Course
-              </button>
-            </div>
+          
           </div>
 
           {/* Details Section */}
@@ -91,7 +87,7 @@ const CourseDetails = () => {
                 className="btn btn-primary px-4"
                 onClick={() => handleViewDetails(course._id)}
               >
-                <i className="bi bi-book-half me-2"></i> View Course Topics
+                <i className="bi bi-book-half me-2"></i> Start Course
               </button>
             </div>
           </div>

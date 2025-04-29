@@ -2,12 +2,15 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [courses, setCourses] = useState([]);
   const [topics, setTopics] = useState([]);
   const [editingCourseId, setEditingCourseId] = useState(null);
+  const [editingTopicId, setEditingTopicId] = useState(null);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -73,7 +76,7 @@ const AdminDashboard = () => {
       setEditingCourseId(null);
       fetchCourses();
     } catch (error) {
-      toast.error(error.response?.data?.msg );
+      toast.error(error.response?.data?.msg);
     }
   };
 
@@ -109,28 +112,65 @@ const AdminDashboard = () => {
   const handleTopicSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
+    const payload = {
+      topic_title: formData.topicTitle,
+      topic_description: formData.topicDescription,
+      catagory: formData.category,
+      content: formData.content,
+      courseId: formData.courseId,
+      courseName: courses.find(course => course._id === formData.courseId)?.title || ''
+    };
+
     try {
-      await axios.post('/api/topic/add', {
-        topic_title: formData.topicTitle,
-        topic_description: formData.topicDescription,
-        catagory: formData.category,
-        content: formData.content,
-        courseId: formData.courseId,
-        courseName: courses.find(course => course._id === formData.courseId)?.title || ''
-      }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      toast.success('Topic created successfully!');
+      if (editingTopicId) {
+        await axios.patch(`/api/topic/update/${editingTopicId}`, payload, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        toast.success('Topic updated successfully!');
+      } else {
+        await axios.post('/api/topic/add', payload, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        toast.success('Topic created successfully!');
+      }
       setFormData({ ...formData, topicTitle: '', topicDescription: '', category: '', content: '', courseId: '' });
+      setEditingTopicId(null);
       fetchTopics();
     } catch (error) {
-      toast.error(error.response?.data?.msg );
+      toast.error(error.response?.data?.msg || 'Failed to save topic');
+    }
+  };
+
+  const handleEditTopic = (topic) => {
+    setFormData({
+      ...formData,
+      topicTitle: topic.topic_title,
+      topicDescription: topic.topic_description,
+      category: topic.catagory,
+      content: topic.content,
+      courseId: topic.courseId
+    });
+    setEditingTopicId(topic._id);
+    window.scrollTo(0, 0);
+  };
+
+  const handleDeleteTopic = async (id) => {
+    const token = localStorage.getItem('token');
+    if (window.confirm('Are you sure you want to delete this topic?')) {
+      try {
+        await axios.delete(`/api/topic/delete/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        toast.success('Topic deleted successfully!');
+        fetchTopics();
+      } catch (error) {
+        toast.error('Failed to delete topic');
+      }
     }
   };
 
   return (
     <div className="d-flex">
-      {/* Sidebar */}
       <div className="bg-dark text-white p-3 vh-100" style={{ width: '250px' }}>
         <h4 className="mb-4">Admin Panel</h4>
         <ul className="nav flex-column">
@@ -152,7 +192,6 @@ const AdminDashboard = () => {
         </ul>
       </div>
 
-      {/* Main Content */}
       <div className="flex-grow-1 p-4">
         {activeTab === 'dashboard' && (
           <div>
@@ -174,7 +213,14 @@ const AdminDashboard = () => {
               </div>
               <div className="mb-3">
                 <label className="form-label">Description</label>
-                <textarea className="form-control" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
+                <CKEditor
+                  editor={ClassicEditor}
+                  data={formData.description}
+                  onChange={(event, editor) => {
+                    const data = editor.getData();
+                    setFormData({ ...formData, description: data });
+                  }}
+                />
               </div>
               <div className="mb-3">
                 <label className="form-label">Price</label>
@@ -195,7 +241,6 @@ const AdminDashboard = () => {
               <button className="btn btn-primary">{editingCourseId ? 'Update Course' : 'Create Course'}</button>
             </form>
 
-            {/* List of Courses */}
             <h5 className="mt-5">Existing Courses</h5>
             <table className="table table-bordered">
               <thead>
@@ -225,7 +270,7 @@ const AdminDashboard = () => {
 
         {activeTab === 'topic' && (
           <div className="card p-4 shadow-sm">
-            <h4 className="mb-4">Create New Topic</h4>
+            <h4 className="mb-4">{editingTopicId ? 'Edit Topic' : 'Create New Topic'}</h4>
             <form onSubmit={handleTopicSubmit}>
               <div className="mb-3">
                 <label className="form-label">Course</label>
@@ -242,7 +287,7 @@ const AdminDashboard = () => {
               </div>
               <div className="mb-3">
                 <label className="form-label">Topic Description</label>
-                <textarea className="form-control" value={formData.topicDescription} onChange={(e) => setFormData({ ...formData, topicDescription: e.target.value })} required />
+                <input type="text" className="form-control" value={formData.topicDescription} onChange={(e) => setFormData({ ...formData, topicDescription: e.target.value })} required />
               </div>
               <div className="mb-3">
                 <label className="form-label">Category</label>
@@ -256,10 +301,42 @@ const AdminDashboard = () => {
               </div>
               <div className="mb-3">
                 <label className="form-label">Content</label>
-                <textarea className="form-control" value={formData.content} onChange={(e) => setFormData({ ...formData, content: e.target.value })} required />
+                <CKEditor
+                  editor={ClassicEditor}
+                  data={formData.content}
+                  onChange={(event, editor) => {
+                    const data = editor.getData();
+                    setFormData({ ...formData, content: data });
+                  }}
+                />
               </div>
-              <button className="btn btn-primary">Create Topic</button>
+              <button className="btn btn-primary">{editingTopicId ? 'Update Topic' : 'Create Topic'}</button>
             </form>
+
+            <h5 className="mt-5">Existing Topics</h5>
+            <table className="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Description</th>
+                  <th>Category</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {topics.map(topic => (
+                  <tr key={topic._id}>
+                    <td>{topic.topic_title}</td>
+                    <td>{topic.topic_description}</td>
+                    <td>{topic.catagory}</td>
+                    <td>
+                      <button className="btn btn-sm btn-warning me-2" onClick={() => handleEditTopic(topic)}>Edit</button>
+                      <button className="btn btn-sm btn-danger" onClick={() => handleDeleteTopic(topic._id)}>Delete</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>

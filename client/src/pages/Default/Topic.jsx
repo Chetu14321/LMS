@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import 'animate.css';  // Importing animate.css for animations
+import 'animate.css';
 
 const Topic = () => {
   const { courseId } = useParams();
@@ -26,16 +26,27 @@ const Topic = () => {
   }, [courseId]);
 
   const handleTopicClick = (topic) => {
-    setActiveTopic(topic); // Set the active topic when clicked
+    setActiveTopic(topic);
   };
 
   if (loading) return <div className="text-center text-white">Loading topics...</div>;
 
   return (
     <div className="container-fluid bg-dark animate__animated animate__fadeIn" style={{ display: 'flex' }}>
-      {/* Sidebar - List of Topics */}
-      <div className="sidebar bg-black text-white p-3 shadow-lg" style={{ width: '250px', height: '100vh', position: 'fixed', top: '60px', left: 0, zIndex: 1000 }}>
-        <h5 className="text-center mb-5">Topics List</h5> {/* Increased margin-bottom here */}
+      {/* Sidebar */}
+      <div
+        className="sidebar bg-black text-white p-3 shadow-lg"
+        style={{
+          width: '250px',
+          height: '100vh',
+          position: 'fixed',
+          top: '60px',
+          left: 0,
+          zIndex: 1000,
+          overflowY: 'auto'
+        }}
+      >
+        <h5 className="text-center mb-5">Topics List</h5>
         <ul className="list-group list-group-flush">
           {topics.map((topic) => (
             <li
@@ -63,13 +74,23 @@ const Topic = () => {
         </ul>
       </div>
 
-      {/* Main Content Area */}
-      <div className="content" style={{ marginLeft: '250px', width: 'calc(100% - 250px)', padding: '20px' }}>
+      {/* Content Area */}
+      <div
+        className="content"
+        style={{
+          marginLeft: '250px',
+          width: 'calc(100% - 250px)',
+          padding: '20px',
+          maxHeight: '100vh',
+          overflowY: 'auto',
+          position: 'relative',
+          zIndex: 0
+        }}
+      >
         <h2 className="text-center text-white mb-4">Course Topics</h2>
         {error && <p className="text-danger text-center">{error}</p>}
 
         <div className="row">
-          {/* Main Content - Active Topic */}
           <div className="col-md-12">
             {activeTopic ? (
               <div className="card shadow-lg bg-dark text-white p-4">
@@ -77,15 +98,13 @@ const Topic = () => {
                 <p className="text-muted mb-4">{activeTopic.topic_description || 'No description available'}</p>
 
                 {activeTopic.catagory === 'video' && activeTopic.content && (
-                        <div className="video-container mb-4">
-                                              <video controls width="100%">
-                        <source src={activeTopic.content} type="video/mp4" />
-                        Your browser does not support the video tag.
-                      </video>
-
-                        </div>
-                      )}
-
+                  <div className="video-container mb-4">
+                    <video controls width="100%">
+                      <source src={activeTopic.content} type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  </div>
+                )}
 
                 {activeTopic.catagory === 'audio' && activeTopic.content && (
                   <div className="audio-container mb-4">
@@ -108,7 +127,6 @@ const Topic = () => {
                   </div>
                 )}
 
-                {/* Article Rendering with Bootstrap styling */}
                 {activeTopic.catagory === 'article' && activeTopic.content && (
                   <div className="article-content mb-4">
                     <div
