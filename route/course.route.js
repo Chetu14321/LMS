@@ -1,8 +1,8 @@
 const { SiSinglestore } = require("react-icons/si")
 const {readAllCourse,readSingleCourse,createCourse,updateCourse,deleteCourse}=require("../controller/course.controller")
 const courseRoute=require("express").Router()
-const authMiddleware=require("../middleware/auth")
-const adminAuth=require("../middleware/admin")
+// const authMiddleware=require("../middleware/auth")
+// const adminAuth=require("../middleware/admin")
 
 
 // courseRoute.post(`/add`,authMiddleware,adminAuth,createCourse)
