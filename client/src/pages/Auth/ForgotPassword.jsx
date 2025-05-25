@@ -1,20 +1,20 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/router";
 
 export default function ForgotPassword() {
     const [step, setStep] = useState(1); // Step 1: Email | Step 2: OTP & Password
     const [email, setEmail] = useState("");
     const [otp, setOtp] = useState("");
     const [newPassword, setNewPassword] = useState("");
-     const navigate=useNavigate()
+    const router = useRouter();
 
     // Step 1: Send OTP
     const handleSendOtp = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post("/api/auth/forgot/password", { email });
+            const res = await axios.post("http://localhost:5300/api/auth/forgot-password", { email });
             toast.success(res.data.msg);
             setStep(2); // Move to OTP step
         } catch (err) {
@@ -26,12 +26,9 @@ export default function ForgotPassword() {
     const handleResetPassword = async (e) => {
         e.preventDefault();
         try {
-             const res =await axios.patch("/api/auth/update/password", { email, otp, password:newPassword });
-      
+            const res = await axios.patch("http://localhost:5300/api/auth/update-password", { email, otp, password: newPassword });
             toast.success(res.data.msg);
-            navigate("/login")
-
-           
+            router.push("/login"); // Redirect to login after reset
         } catch (err) {
             toast.error(err.response?.data?.msg || "Something went wrong!");
         }
