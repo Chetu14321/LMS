@@ -1,14 +1,20 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { useRouter } from "next/router";
+// import { useRouter } from "next/router";
+ import { useNavigate } from 'react-router-dom'
 
 export default function ForgotPassword() {
     const [step, setStep] = useState(1); // Step 1: Email | Step 2: OTP & Password
     const [email, setEmail] = useState("");
     const [otp, setOtp] = useState("");
     const [newPassword, setNewPassword] = useState("");
-    const router = useRouter();
+    // const router = useRouter();
+    const navigate = useNavigate();
+
+
+
+
 
     // Step 1: Send OTP
     const handleSendOtp = async (e) => {
@@ -28,7 +34,7 @@ export default function ForgotPassword() {
         try {
             const res = await axios.patch("http://localhost:5300/api/auth/update-password", { email, otp, password: newPassword });
             toast.success(res.data.msg);
-            router.push("/login"); // Redirect to login after reset
+            navigate("/login"); // Redirect to login after reset
         } catch (err) {
             toast.error(err.response?.data?.msg || "Something went wrong!");
         }
