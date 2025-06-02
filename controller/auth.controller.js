@@ -191,7 +191,12 @@ const updatePassController = async (req, res) => {
                 otp: 0
             }
         );
+        let template=`<div>
+                       <h1>${exUser.name} , password reset successfully.....</h1>
+                       <h3>Thank You.....</mark></strong></h3> 
+                      </div>`
 
+           await mailHandler(exUser.email,"Reset Password successfully",template)
         res.status(StatusCodes.OK).json({ msg: "Password updated successfully" });
     } catch (err) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: err.message });

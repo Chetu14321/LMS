@@ -34,16 +34,22 @@ import { toast } from "react-toastify";
     }
     return (
        <>
-        <nav className="navbar navbar-expand-md navbar-dark bg-secondary">
-         <div className="container">
-            <NavLink className="navbar-brand" to={'/'}>Learning Management System</NavLink> 
+        <nav className="navbar navbar-expand-md navbar-dark bg-secondary fixed-top">
+        <div className="container">
+            <NavLink className="navbar-brand" to={'/'}>
+            Learning Management System
+            </NavLink>
 
-            <button className="btn btn-outline-dark" data-bs-toggle="offcanvas" data-bs-target="#menu" >
-                <span className="navbar-toggler-icon"></span>
+            <button
+            className="btn btn-outline-dark"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#menu"
+            >
+            <span className="navbar-toggler-icon"></span>
             </button>
-            
-            </div>   
+        </div>
         </nav>
+
 
         <div className="offcanvas offcanvas-end" id="menu">
             <div className="offcanvas-header">

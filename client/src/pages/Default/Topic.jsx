@@ -54,7 +54,7 @@ const Topic = () => {
         className={`sidebar bg-black text-white p-3 shadow-lg ${isSidebarVisible ? '' : 'd-none'}`}
         style={{
           width: '250px',
-          height: '100vh',
+          height: '100%',
           position: 'fixed',
           top: '60px',
           left: 0,
@@ -63,7 +63,7 @@ const Topic = () => {
           transition: 'transform 0.3s ease',
         }}
       >
-        <h5 className="text-center mb-5">Topics List</h5>
+        <h5 className="text-center mb-5"  >Topics List</h5>
         <ul className="list-group list-group-flush">
           {topics.map((topic) => (
             <li
@@ -98,9 +98,10 @@ const Topic = () => {
           marginLeft: isSidebarVisible ? '250px' : '0',  // Adjust based on sidebar visibility
           width: isSidebarVisible ? 'calc(100% - 250px)' : '100%',
           padding: '20px',
-          maxHeight: '100vh',
+          maxHeight: '100%',
           overflowY: 'auto',
           position: 'relative',
+          top:"50px",
           zIndex: 0
         }}
       >
