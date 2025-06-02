@@ -62,9 +62,9 @@ const CourseDetails = () => {
           {/* Details Section */}
           <div className="col-md-7">
             <h3 className="text-dark fw-bold mb-3">{course.title}</h3>
-            <p >
-              <strong>Description:</strong> {course.description}
-            </p>
+            <h5>
+              Description: {course.description}
+           </h5>
 
             <div className="mb-3">
               <span className="badge bg-gradient bg-success fs-6 p-2">
