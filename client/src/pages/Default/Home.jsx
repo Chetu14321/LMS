@@ -89,7 +89,7 @@ const Home = () => {
                       className={`btn btn-outline-${theme === "dark" ? "light" : "primary"} btn-sm`}
                       onClick={() => handleViewDetails(course._id)}
                     >
-                      View Details
+                      View Details.
                     </button>
                   </div>
                 </div>
