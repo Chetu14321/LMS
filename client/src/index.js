@@ -9,17 +9,22 @@ import reportWebVitals from './reportWebVitals';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle";
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import '@fortawesome/fontawesome-free/css/all.min.css';
+
 
 import "react-toastify/ReactToastify.css";
+// import { ThemeProvider } from './Context/ThemeContex';
 
 
 import AuthProvider from './Context/AuthContex';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
+    {/* <ThemeProvider> */}
     <AuthProvider >
         <App />
     </AuthProvider>
+    {/* </ThemeProvider> */}
    
   </React.StrictMode>
 );

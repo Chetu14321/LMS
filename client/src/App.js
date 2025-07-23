@@ -14,6 +14,7 @@ import useAuth from "./Hooks/useAuth";
 import ForgotPassword from "./pages/Auth/ForgotPassword";
 import CourseDetails from "./pages/Default/CourseDetailes";
 import Topic from "./pages/Default/Topic";
+import { ThemeProvider } from './Context/ThemeContex';
 
 
 
@@ -21,7 +22,10 @@ import Topic from "./pages/Default/Topic";
 function App() {
   const {user}=useAuth()
   return (
-  <BrowserRouter>
+    <ThemeProvider>
+      <BrowserRouter>
+  
+  
         <Menu/>
         <ToastContainer autoClose={4000} position="top-right"/>
         <Routes>
@@ -45,8 +49,11 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
 
+   
+
 
   </BrowserRouter>
+      </ThemeProvider> 
   );
 }
 

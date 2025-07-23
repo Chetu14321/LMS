@@ -1,7 +1,7 @@
 const { StatusCodes } = require('http-status-codes')
 const jwt = require('jsonwebtoken')
 
-const authMiddleware = async (req,res,next) => {
+const protect = async (req,res,next) => {
     try {
         // let token =  req.header('Authorization')
         let { login_token } = req.signedCookies
@@ -12,7 +12,7 @@ const authMiddleware = async (req,res,next) => {
         // verify
         await jwt.verify(login_token, process.env.SECRET_KEY,(err,data) => {
             if(err)
-                return res.status(StatusCodes.UNAUTHORIZED).json({ msg: err.message })
+                return res.status(404).json({ msg: err.message })
  
             let { id } = data
             req.userId = id;
@@ -24,4 +24,4 @@ const authMiddleware = async (req,res,next) => {
     } 
 }
 
-module.exports = authMiddleware
+module.exports = protect

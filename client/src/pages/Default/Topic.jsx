@@ -56,7 +56,7 @@ const Topic = () => {
           width: '250px',
           height: '100%',
           position: 'fixed',
-          top: '60px',
+          top: '60px', 
           left: 0,
           zIndex: 1000,
           overflowY: 'auto',
