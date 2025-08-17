@@ -24,10 +24,10 @@ export default function Menu() {
           navigate(`/`);
         })
         .catch((err) => {
-          toast.error(err.response.data.msg);
+          toast.error(err.response?.data?.msg || "Logout failed");
         });
     } else {
-      toast.warning("Logout failed");
+      toast.warning("Logout cancelled");
     }
   };
 
@@ -35,31 +35,35 @@ export default function Menu() {
     <>
       <nav className="navbar navbar-expand-md navbar-dark bg-secondary fixed-top">
         <div className="container">
+          {/* Brand / Logo */}
           <NavLink className="navbar-brand" to={"/"}>
             Learning Management System
           </NavLink>
 
-          <button
-            className="btn btn-outline-dark"
-            data-bs-toggle="offcanvas"
-            data-bs-target="#menu"
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
+          {/* Right side buttons */}
+          <div className="d-flex ms-auto align-items-center">
+            {/* Theme Toggle Button */}
+            <button
+              className="btn btn-outline-light me-2"
+              onClick={toggleTheme}
+              title="Toggle Theme"
+            >
+              <i className={`fa ${theme === "light" ? "fa-sun" : "fa-moon"}`}></i>
+            </button>
 
-          {/* Theme Toggle Button */}
-          <button
-            className="btn btn-outline-light ms-3"
-            onClick={toggleTheme}
-            title="Toggle Theme"
-          >
-            <i
-              className={`fa ${theme === "light" ? "fa-sun" : "fa-moon"}`}
-            ></i> {/* Sun for light theme, moon for dark */}
-          </button>
+            {/* Menu Toggle Button */}
+            <button
+              className="btn btn-outline-dark"
+              data-bs-toggle="offcanvas"
+              data-bs-target="#menu"
+            >
+              <span className="navbar-toggler-icon"></span>
+            </button>
+          </div>
         </div>
       </nav>
 
+      {/* Offcanvas Menu */}
       <div className="offcanvas offcanvas-end" id="menu">
         <div className="offcanvas-header">
           <h3 className="offcanvas-title">Auth</h3>
@@ -93,7 +97,7 @@ export default function Menu() {
                   </li>
                   <li className="nav-item">
                     <NavLink
-                      onClick={() => LogoutHandler()}
+                      onClick={LogoutHandler}
                       className={"nav-link btn-danger"}
                     >
                       <i className="fa fa-sign-out-alt me-2"></i> Logout

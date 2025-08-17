@@ -3,13 +3,15 @@ import { toast } from "react-toastify";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import useAuth from "../../Hooks/useAuth";
+import {useTheme} from "../../Context/ThemeContex"
 
 export default function Login() {
     const [user, setUser] = useState({ email: '', password: '' });
-
+    const { theme } = useTheme();
     const navigate = useNavigate();
     const location = useLocation();
     const { setIsLogin, setToken } = useAuth();
+   
 
     const readInput = (e) => {
         const { name, value } = e.target;
@@ -38,6 +40,8 @@ export default function Login() {
     };
 
     return (
+    <div className={theme === "dark" ? "bg-dark text-light" : "bg-light text-dark"}>
+    {/* Page content */} 
         <div style={styles.bg} className="d-flex justify-content-center align-items-center">
             <div className="p-5 rounded-4 shadow-lg animate__animated animate__fadeIn" style={styles.glass}>
                 <div className="text-center mb-4">
@@ -99,6 +103,7 @@ export default function Login() {
                 </form>
             </div>
         </div>
+    </div>
     );
 }
 

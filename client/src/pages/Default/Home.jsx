@@ -47,7 +47,7 @@ const Home = () => {
           <h1 className="display-5 fw-bold animate__animated animate__fadeInDown">
             📚 Welcome to Our LMS......
           </h1>
-          <p className="text-muted animate__animated animate__fadeIn">
+          <p className=" animate__animated animate__fadeIn">
             Start learning with our top courses today!
           </p>
         </div>
@@ -82,7 +82,7 @@ const Home = () => {
                   />
                   <div className="card-body">
                     <h5 className="card-title">{course.title}</h5>
-                    <p className="card-text text-muted">
+                    <p className="card-text ">
                       {course.description.slice(0, 80)}...
                     </p>
                     <button

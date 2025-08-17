@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "animate.css";
+import {useTheme} from "../../Context/ThemeContex"
 
 const CourseDetails = () => {
   const { id } = useParams();
   const [course, setCourse] = useState(null);
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   useEffect(() => {
     const fetchCourseDetails = async () => {
@@ -31,6 +33,9 @@ const CourseDetails = () => {
   if (!course) return <p className="text-center mt-5">Loading course...</p>;
 
   return (
+     <div className={theme === "dark" ? "bg-dark text-light" : "bg-light text-dark"}>
+    {/* Page content */}
+  
     <div className="container mt-5">
       {/* Header */}
       <div
@@ -93,6 +98,7 @@ const CourseDetails = () => {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 };
