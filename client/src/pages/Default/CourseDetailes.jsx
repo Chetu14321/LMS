@@ -20,12 +20,12 @@ const CourseDetails = () => {
     const fetchCourseDetails = async () => {
       try {
         // Get course info
-        const res = await axios.get(`http://localhost:5400/api/course/single/${id}`);
+        const res = await axios.get(`/api/course/single/${id}`);
         setCourse(res.data.course);
 
         // POST request for enrollment status
         const enrollRes = await axios.post(
-          "http://localhost:5400/api/enrollments/requests/status",
+          "/api/enrollments/requests/status",
           { userId, courseId: id }
         );
 
@@ -41,7 +41,7 @@ const CourseDetails = () => {
   // Request enrollment
   const handleRequest = async () => {
     try {
-      const res = await axios.post("http://localhost:5400/api/enrollments/request", {
+      const res = await axios.post("/api/enrollments/request", {
         userId,
         courseId: id,
       });
