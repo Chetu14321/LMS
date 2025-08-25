@@ -42,7 +42,7 @@ function App() {
 
           {/* <Route path="/topic/:topicId" element={<Topic/>} /> */}
 
-          <Route path="/course//topics/:courseId" element={<Topic/>} />
+          <Route path="/course/topics/:courseId" element={<Topic/>} />
 
 
       

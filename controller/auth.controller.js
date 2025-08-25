@@ -69,39 +69,54 @@ const regController=async(req,res)=>{
 
 
 // login
-const loginController=async(req,res)=>{
-    try{
+const loginController = async (req, res) => {
+  try {
+    let { email, password } = req.body;
 
-    let {email,password}=req.body
-        //verify the emailid
-        let exUser=await UserModel.findOne({email})
-        if(!exUser)
-            return res.status(StatusCodes.NOT_FOUND).json({msg:`User ${email} not found`})
+    // verify the email
+    let exUser = await UserModel.findOne({ email });
+    if (!exUser)
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ msg: `User ${email} not found` });
 
-        //verify password
+    // verify password
+    let veriftPass = await bcrypt.compare(password, exUser.password);
+    if (!veriftPass)
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json({ msg: "Invalid password" });
 
-        let veriftPass= await bcrypt.compare(password,exUser.password)
-        if(!veriftPass)
-            return res.status(StatusCodes.UNAUTHORIZED).json({msg:"Invalid password"})
+    // login token
+    let token = await genarateToken(exUser._id);
 
-        //login token
-        let token=await genarateToken(exUser._id)
+    // cookie
+    res.cookie("login_token", token, {
+      httpOnly: true,
+      signed: true,
+      path: "/",
+      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+    });
 
-        //cookie
+    // ✅ Send user info also
+    res.json({
+      msg: "login successful",
+      token,
+      role: exUser.role,
+      user: {
+        _id: exUser._id,
+        name: exUser.name,
+        email: exUser.email,
+        mobile: exUser.mobile,
+      },
+    });
+  } catch (err) {
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ msg: err.message });
+  }
+};
 
-        res.cookie("login_token",token,{
-            httpOnly:true,
-            signed:true,
-            path: "/",
-            expires:new Date(Date.now()+1000*60*60*24*30)
-        })
-
-
-        res.json({msg:"login successful", token,role:exUser.role})
-    }catch(err){
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({msg:err.message});
-    }
-}
 
 //logout
 const logoutController=async(req,res)=>{

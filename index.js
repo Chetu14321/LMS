@@ -16,8 +16,9 @@ const cors = require('cors')
 app.use(cors()); // this line must be before any routes
 
 // app.use(express.static("./client/build"))
-// app.use(express.static("./build"))
+app.use(express.static("./build"))
 app.use(express.static(path.join(__dirname, "client", "build")));
+// app.use(express.static(path.join(__dirname, "client", "build")));
 
 app.use(cookieParser(process.env.SECRET_KEY))
 
@@ -44,6 +45,8 @@ app.get("/",async(req,res)=>{
 app.use(`/api/auth`,require('./route/auth.route'))
 app.use(`/api/course`,require('./route/course.route'))
 app.use(`/api/topic`,require('./route/topic.route'))
+app.use("/api/enrollments",require('./route/enrollment') )
+app.use("/api/live", require('./route/live'));
 
 //default routes
 app.all("/*",async(req,res)=>{

@@ -25,6 +25,12 @@ const courseSchema = new mongoose.Schema({
     faq:{type:Array,
         default:[]
     },
+    liveSession: {
+    isActive: { type: Boolean, default: false },
+    meetingLink: String,
+    recordingUrl: String
+    },
+
     isActive: {type:Boolean, default:true}
 
   

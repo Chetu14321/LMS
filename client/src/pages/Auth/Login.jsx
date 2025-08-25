@@ -23,6 +23,9 @@ export default function Login() {
         try {
             const res = await axios.post(`/api/auth/login`, user);
             toast.success(res.data.msg);
+             localStorage.setItem("token", res.data.token);
+            localStorage.setItem("userId", res.data.user._id);  // ✅ fix
+            localStorage.setItem("role", res.data.user.role);
             setToken(res.data.token);
             setIsLogin(true);
 

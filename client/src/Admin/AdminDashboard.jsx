@@ -1,38 +1,41 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { toast } from 'react-toastify';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { CKEditor } from '@ckeditor/ckeditor5-react';
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState("dashboard");
   const [courses, setCourses] = useState([]);
   const [topics, setTopics] = useState([]);
+  const [enrollments, setEnrollments] = useState([]);
   const [editingCourseId, setEditingCourseId] = useState(null);
   const [editingTopicId, setEditingTopicId] = useState(null);
+
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    price: '',
-    trainer: '',
-    thunbmnail_image: '',
-    course_link: '',
-    topicTitle: '',
-    topicDescription: '',
-    category: '',
-    content: '',
-    courseId: ''
+    title: "",
+    description: "",
+    price: "",
+    trainer: "",
+    thunbmnail_image: "",
+    course_link: "",
+    topicTitle: "",
+    topicDescription: "",
+    category: "",
+    content: "",
+    courseId: "",
   });
 
   useEffect(() => {
     fetchCourses();
     fetchTopics();
+    fetchEnrollments();
   }, []);
 
   const fetchCourses = async () => {
     try {
-      const res = await axios.get('/api/course/all');
+      const res = await axios.get("/api/course/all");
       setCourses(res.data.courses);
     } catch (error) {
       console.error(error);
@@ -41,23 +44,57 @@ const AdminDashboard = () => {
 
   const fetchTopics = async () => {
     try {
-      const res = await axios.get('/api/topic/all');
+      const res = await axios.get("/api/topic/all");
       setTopics(res.data.topics);
     } catch (error) {
       console.error(error);
     }
   };
 
+  const fetchEnrollments = async () => {
+    try {
+      const res = await axios.get("/api/enrollments/requests/all");
+      setEnrollments(res.data.requests);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // Approve enrollment
+const handleApprove = async (id) => {
+  try {
+    await axios.patch(`/api/enrollments/requests/${id}`, { status: "approved" });
+    toast.success("Enrollment approved!");
+    fetchEnrollments();
+  } catch (error) {
+    toast.error("Failed to approve");
+  }
+};
+
+// Reject enrollment
+const handleReject = async (id) => {
+  try {
+    await axios.patch(`/api/enrollments/requests/${id}`, { status: "rejected" });
+    toast.success("Enrollment rejected!");
+    fetchEnrollments();
+  } catch (error) {
+    toast.error("Failed to reject");
+  }
+};
+
+
+
+  // -------- Course Handlers --------
   const handleCourseSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     const courseData = {
       title: formData.title,
       description: formData.description,
       price: formData.price,
       trainer: formData.trainer,
       thunbmnail_image: formData.thunbmnail_image,
-      course_link: formData.course_link
+      course_link: formData.course_link,
     };
 
     try {
@@ -65,14 +102,22 @@ const AdminDashboard = () => {
         await axios.patch(`/api/course/update/${editingCourseId}`, courseData, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        toast.success('Course updated successfully!');
+        toast.success("Course updated successfully!");
       } else {
-        await axios.post('/api/course/add', courseData, {
+        await axios.post("/api/course/add", courseData, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        toast.success('Course created successfully!');
+        toast.success("Course created successfully!");
       }
-      setFormData({ ...formData, title: '', description: '', price: '', trainer: '', thunbmnail_image: '', course_link: '' });
+      setFormData({
+        ...formData,
+        title: "",
+        description: "",
+        price: "",
+        trainer: "",
+        thunbmnail_image: "",
+        course_link: "",
+      });
       setEditingCourseId(null);
       fetchCourses();
     } catch (error) {
@@ -88,37 +133,39 @@ const AdminDashboard = () => {
       price: course.price,
       trainer: course.trainer,
       thunbmnail_image: course.thunbmnail_image,
-      course_link: course.course_link
+      course_link: course.course_link,
     });
     setEditingCourseId(course._id);
     window.scrollTo(0, 0);
   };
 
   const handleDeleteCourse = async (id) => {
-    const token = localStorage.getItem('token');
-    if (window.confirm('Are you sure you want to delete this course?')) {
+    const token = localStorage.getItem("token");
+    if (window.confirm("Are you sure you want to delete this course?")) {
       try {
         await axios.delete(`/api/course/delete/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        toast.success('Course deleted successfully!');
+        toast.success("Course deleted successfully!");
         fetchCourses();
       } catch (error) {
-        toast.error('Failed to delete course');
+        toast.error("Failed to delete course");
       }
     }
   };
 
+  // -------- Topic Handlers --------
   const handleTopicSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     const payload = {
       topic_title: formData.topicTitle,
       topic_description: formData.topicDescription,
       catagory: formData.category,
       content: formData.content,
       courseId: formData.courseId,
-      courseName: courses.find(course => course._id === formData.courseId)?.title || ''
+      courseName:
+        courses.find((course) => course._id === formData.courseId)?.title || "",
     };
 
     try {
@@ -126,18 +173,25 @@ const AdminDashboard = () => {
         await axios.patch(`/api/topic/update/${editingTopicId}`, payload, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        toast.success('Topic updated successfully!');
+        toast.success("Topic updated successfully!");
       } else {
-        await axios.post('/api/topic/add', payload, {
+        await axios.post("/api/topic/add", payload, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        toast.success('Topic created successfully!');
+        toast.success("Topic created successfully!");
       }
-      setFormData({ ...formData, topicTitle: '', topicDescription: '', category: '', content: '', courseId: '' });
+      setFormData({
+        ...formData,
+        topicTitle: "",
+        topicDescription: "",
+        category: "",
+        content: "",
+        courseId: "",
+      });
       setEditingTopicId(null);
       fetchTopics();
     } catch (error) {
-      toast.error(error.response?.data?.msg || 'Failed to save topic');
+      toast.error(error.response?.data?.msg || "Failed to save topic");
     }
   };
 
@@ -148,68 +202,159 @@ const AdminDashboard = () => {
       topicDescription: topic.topic_description,
       category: topic.catagory,
       content: topic.content,
-      courseId: topic.courseId
+      courseId: topic.courseId,
     });
     setEditingTopicId(topic._id);
     window.scrollTo(0, 0);
   };
 
   const handleDeleteTopic = async (id) => {
-    const token = localStorage.getItem('token');
-    if (window.confirm('Are you sure you want to delete this topic?')) {
+    const token = localStorage.getItem("token");
+    if (window.confirm("Are you sure you want to delete this topic?")) {
       try {
         await axios.delete(`/api/topic/delete/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        toast.success('Topic deleted successfully!');
+        toast.success("Topic deleted successfully!");
         fetchTopics();
       } catch (error) {
-        toast.error('Failed to delete topic');
+        toast.error("Failed to delete topic");
       }
     }
   };
 
   return (
     <div className="d-flex">
-      <div className="bg-dark text-white p-3 vh-100" style={{ width: '250px' }}>
+      {/* Sidebar */}
+      <div className="bg-dark text-white p-3 vh-100" style={{ width: "250px" }}>
         <h4 className="mb-4">Admin Panel</h4>
         <ul className="nav flex-column">
           <li className="nav-item mb-2">
-            <button className={`btn btn-${activeTab === 'dashboard' ? 'warning' : 'outline-light'} w-100`} onClick={() => setActiveTab('dashboard')}>
+            <button
+              className={`btn btn-${
+                activeTab === "dashboard" ? "warning" : "outline-light"
+              } w-100`}
+              onClick={() => setActiveTab("dashboard")}
+            >
               Dashboard
             </button>
           </li>
           <li className="nav-item mb-2">
-            <button className={`btn btn-${activeTab === 'course' ? 'warning' : 'outline-light'} w-100`} onClick={() => setActiveTab('course')}>
+            <button
+              className={`btn btn-${
+                activeTab === "course" ? "warning" : "outline-light"
+              } w-100`}
+              onClick={() => setActiveTab("course")}
+            >
               Create Course
             </button>
           </li>
-          <li className="nav-item">
-            <button className={`btn btn-${activeTab === 'topic' ? 'warning' : 'outline-light'} w-100`} onClick={() => setActiveTab('topic')}>
+          <li className="nav-item mb-2">
+            <button
+              className={`btn btn-${
+                activeTab === "topic" ? "warning" : "outline-light"
+              } w-100`}
+              onClick={() => setActiveTab("topic")}
+            >
               Create Topic
+            </button>
+          </li>
+          <li className="nav-item">
+            <button
+              className={`btn btn-${
+                activeTab === "enrollments" ? "warning" : "outline-light"
+              } w-100`}
+              onClick={() => setActiveTab("enrollments")}
+            >
+              Enrollment Requests
             </button>
           </li>
         </ul>
       </div>
 
+      {/* Main Content */}
       <div className="flex-grow-1 p-4">
-        {activeTab === 'dashboard' && (
+        {activeTab === "dashboard" && (
           <div>
             <h3 className="mb-4">Dashboard Overview</h3>
             <div className="card p-3 mb-3 shadow-sm">
-              <p><strong>Total Courses:</strong> {courses.length}</p>
-              <p><strong>Total Topics:</strong> {topics.length}</p>
+              <p>
+                <strong>Total Courses:</strong> {courses.length}
+              </p>
+              <p>
+                <strong>Total Topics:</strong> {topics.length}
+              </p>
+              <p>
+                <strong>Total Enrollment Requests:</strong> {enrollments.length}
+              </p>
             </div>
           </div>
         )}
 
-        {activeTab === 'course' && (
+        {/* Enrollment Requests */}
+        {activeTab === "enrollments" && (
           <div className="card p-4 shadow-sm">
-            <h4 className="mb-4">{editingCourseId ? 'Edit Course' : 'Create New Course'}</h4>
+            <h4 className="mb-4">Enrollment Requests</h4>
+            <table className="table table-bordered">
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Course</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {enrollments.map((req) => (
+                  <tr key={req._id}>
+                    <td>{req.userId?.name || "N/A"}</td>
+                    <td>{req.courseId?.title || "N/A"}</td>
+                    <td>{req.status}</td>
+                    <td>
+                      {req.status === "pending" ? (
+                        <>
+                          <button
+                            className="btn btn-sm btn-success me-2"
+                            onClick={() => handleApprove(req._id)}
+                          >
+                            Approve
+                          </button>
+                          <button
+                            className="btn btn-sm btn-danger"
+                            onClick={() => handleReject(req._id)}
+                          >
+                            Reject
+                          </button>
+                        </>
+                      ) : (
+                        <span className="text-muted">No Action</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Courses */}
+        {activeTab === "course" && (
+          <div className="card p-4 shadow-sm">
+            <h4 className="mb-4">
+              {editingCourseId ? "Edit Course" : "Create New Course"}
+            </h4>
             <form onSubmit={handleCourseSubmit}>
               <div className="mb-3">
                 <label className="form-label">Title</label>
-                <input type="text" className="form-control" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
+                <input
+                  type="text"
+                  className="form-control"
+                  value={formData.title}
+                  onChange={(e) =>
+                    setFormData({ ...formData, title: e.target.value })
+                  }
+                  required
+                />
               </div>
               <div className="mb-3">
                 <label className="form-label">Description</label>
@@ -224,21 +369,57 @@ const AdminDashboard = () => {
               </div>
               <div className="mb-3">
                 <label className="form-label">Price</label>
-                <input type="number" className="form-control" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} required />
+                <input
+                  type="number"
+                  className="form-control"
+                  value={formData.price}
+                  onChange={(e) =>
+                    setFormData({ ...formData, price: e.target.value })
+                  }
+                  required
+                />
               </div>
               <div className="mb-3">
                 <label className="form-label">Trainer</label>
-                <input type="text" className="form-control" value={formData.trainer} onChange={(e) => setFormData({ ...formData, trainer: e.target.value })} required />
+                <input
+                  type="text"
+                  className="form-control"
+                  value={formData.trainer}
+                  onChange={(e) =>
+                    setFormData({ ...formData, trainer: e.target.value })
+                  }
+                  required
+                />
               </div>
               <div className="mb-3">
                 <label className="form-label">Thumbnail URL</label>
-                <input type="text" className="form-control" value={formData.thunbmnail_image} onChange={(e) => setFormData({ ...formData, thunbmnail_image: e.target.value })} required />
+                <input
+                  type="text"
+                  className="form-control"
+                  value={formData.thunbmnail_image}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      thunbmnail_image: e.target.value,
+                    })
+                  }
+                  required
+                />
               </div>
               <div className="mb-3">
                 <label className="form-label">Course Link</label>
-                <input type="url" className="form-control" value={formData.course_link} onChange={(e) => setFormData({ ...formData, course_link: e.target.value })} />
+                <input
+                  type="url"
+                  className="form-control"
+                  value={formData.course_link}
+                  onChange={(e) =>
+                    setFormData({ ...formData, course_link: e.target.value })
+                  }
+                />
               </div>
-              <button className="btn btn-primary">{editingCourseId ? 'Update Course' : 'Create Course'}</button>
+              <button className="btn btn-primary">
+                {editingCourseId ? "Update Course" : "Create Course"}
+              </button>
             </form>
 
             <h5 className="mt-5">Existing Courses</h5>
@@ -252,14 +433,24 @@ const AdminDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {courses.map(course => (
+                {courses.map((course) => (
                   <tr key={course._id}>
                     <td>{course.title}</td>
                     <td>{course.trainer}</td>
                     <td>{course.price}</td>
                     <td>
-                      <button className="btn btn-sm btn-warning me-2" onClick={() => handleEditCourse(course)}>Edit</button>
-                      <button className="btn btn-sm btn-danger" onClick={() => handleDeleteCourse(course._id)}>Delete</button>
+                      <button
+                        className="btn btn-sm btn-warning me-2"
+                        onClick={() => handleEditCourse(course)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="btn btn-sm btn-danger"
+                        onClick={() => handleDeleteCourse(course._id)}
+                      >
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -268,30 +459,68 @@ const AdminDashboard = () => {
           </div>
         )}
 
-        {activeTab === 'topic' && (
+        {/* Topics */}
+        {activeTab === "topic" && (
           <div className="card p-4 shadow-sm">
-            <h4 className="mb-4">{editingTopicId ? 'Edit Topic' : 'Create New Topic'}</h4>
+            <h4 className="mb-4">
+              {editingTopicId ? "Edit Topic" : "Create New Topic"}
+            </h4>
             <form onSubmit={handleTopicSubmit}>
               <div className="mb-3">
                 <label className="form-label">Course</label>
-                <select className="form-select" value={formData.courseId} onChange={(e) => setFormData({ ...formData, courseId: e.target.value })} required>
+                <select
+                  className="form-select"
+                  value={formData.courseId}
+                  onChange={(e) =>
+                    setFormData({ ...formData, courseId: e.target.value })
+                  }
+                  required
+                >
                   <option value="">Select a course</option>
-                  {courses.map(course => (
-                    <option key={course._id} value={course._id}>{course.title}</option>
+                  {courses.map((course) => (
+                    <option key={course._id} value={course._id}>
+                      {course.title}
+                    </option>
                   ))}
                 </select>
               </div>
               <div className="mb-3">
                 <label className="form-label">Topic Title</label>
-                <input type="text" className="form-control" value={formData.topicTitle} onChange={(e) => setFormData({ ...formData, topicTitle: e.target.value })} required />
+                <input
+                  type="text"
+                  className="form-control"
+                  value={formData.topicTitle}
+                  onChange={(e) =>
+                    setFormData({ ...formData, topicTitle: e.target.value })
+                  }
+                  required
+                />
               </div>
               <div className="mb-3">
                 <label className="form-label">Topic Description</label>
-                <input type="text" className="form-control" value={formData.topicDescription} onChange={(e) => setFormData({ ...formData, topicDescription: e.target.value })} required />
+                <input
+                  type="text"
+                  className="form-control"
+                  value={formData.topicDescription}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      topicDescription: e.target.value,
+                    })
+                  }
+                  required
+                />
               </div>
               <div className="mb-3">
                 <label className="form-label">Category</label>
-                <select className="form-select" value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} required>
+                <select
+                  className="form-select"
+                  value={formData.category}
+                  onChange={(e) =>
+                    setFormData({ ...formData, category: e.target.value })
+                  }
+                  required
+                >
                   <option value="">Select Category</option>
                   <option value="video">Video</option>
                   <option value="article">Article</option>
@@ -310,7 +539,9 @@ const AdminDashboard = () => {
                   }}
                 />
               </div>
-              <button className="btn btn-primary">{editingTopicId ? 'Update Topic' : 'Create Topic'}</button>
+              <button className="btn btn-primary">
+                {editingTopicId ? "Update Topic" : "Create Topic"}
+              </button>
             </form>
 
             <h5 className="mt-5">Existing Topics</h5>
@@ -324,14 +555,24 @@ const AdminDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {topics.map(topic => (
+                {topics.map((topic) => (
                   <tr key={topic._id}>
                     <td>{topic.topic_title}</td>
                     <td>{topic.topic_description}</td>
                     <td>{topic.catagory}</td>
                     <td>
-                      <button className="btn btn-sm btn-warning me-2" onClick={() => handleEditTopic(topic)}>Edit</button>
-                      <button className="btn btn-sm btn-danger" onClick={() => handleDeleteTopic(topic._id)}>Delete</button>
+                      <button
+                        className="btn btn-sm btn-warning me-2"
+                        onClick={() => handleEditTopic(topic)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="btn btn-sm btn-danger"
+                        onClick={() => handleDeleteTopic(topic._id)}
+                      >
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 ))}
